@@ -55,43 +55,51 @@ def analyze_behavior(data: dict) -> dict:
     # ── 2. Keystroke uniformity ──────────────────────────────────────────────
     # List of time gaps between keypresses (ms)
     keystroke_intervals = data.get("keystroke_intervals", [])
-    max_points += 2
+    max_points += 3   # increased from 2 → catches smart bot's fake uniform intervals
 
     if len(keystroke_intervals) > 3:
-        avg   = sum(keystroke_intervals) / len(keystroke_intervals)
-        diffs = [abs(k - avg) for k in keystroke_intervals]
+        avg      = sum(keystroke_intervals) / len(keystroke_intervals)
+        diffs    = [abs(k - avg) for k in keystroke_intervals]
         variance = sum(diffs) / len(diffs)
 
         if variance < 10:
-            # All keystrokes perfectly spaced — bot
-            risk_points += 2
+            # Perfectly spaced keystrokes — definite bot
+            risk_points += 3
             signals.append("⚠ Perfectly uniform keystroke timing (bot pattern)")
+        elif variance < 20:
+            # Smart bot tries to add noise but it's still too tight
+            risk_points += 2
+            signals.append("⚠ Suspiciously uniform keystroke timing")
         elif variance < 30:
             risk_points += 1
-            signals.append("! Suspiciously uniform keystroke timing")
+            signals.append("! Slightly uniform keystroke timing")
     elif len(keystroke_intervals) == 0 and time_to_submit and time_to_submit < 3000:
         # Fast submit with zero keystrokes = credentials were pasted
-        risk_points += 2
+        risk_points += 3
         signals.append("⚠ No keystrokes detected — credentials likely pasted")
 
     # ── 3. Mouse movement ────────────────────────────────────────────────────
     mouse_moves = data.get("mouse_move_count", 0)
-    max_points += 2
+    max_points += 3   # increased from 2 → minimal mouse is a stronger signal
 
     if mouse_moves == 0:
-        risk_points += 2
+        risk_points += 3
         signals.append("⚠ Zero mouse movement detected")
-    elif mouse_moves < 3:
+    elif mouse_moves < 5:
+        # Smart bot sends 2–8 moves — still too low for a real human
+        risk_points += 2
+        signals.append(f"⚠ Very minimal mouse movement ({mouse_moves} events)")
+    elif mouse_moves < 10:
         risk_points += 1
-        signals.append("! Minimal mouse movement")
+        signals.append(f"! Low mouse movement ({mouse_moves} events)")
 
     # ── 4. Password paste detection ─────────────────────────────────────────
     password_pasted = data.get("password_pasted", False)
-    max_points += 1
+    max_points += 2   # increased from 1 → pasting is a strong bot signal
 
     if password_pasted:
-        risk_points += 1
-        signals.append("! Password was pasted (not typed)")
+        risk_points += 2
+        signals.append("⚠ Password was pasted (strong bot indicator)")
 
     # ── 5. Field focus pattern ───────────────────────────────────────────────
     # Did user tab/click between fields naturally?
@@ -101,6 +109,10 @@ def analyze_behavior(data: dict) -> dict:
     if field_focus_count == 0:
         risk_points += 1
         signals.append("⚠ No field focus events — form filled programmatically")
+    elif field_focus_count == 1:
+        # Smart bot sends exactly 1 focus — humans typically hit 2+
+        risk_points += 0   # no extra penalty but noted in signals
+        signals.append("! Only 1 field focus event")
 
     # ── Calculate final score ────────────────────────────────────────────────
     score = round(risk_points / max_points, 3) if max_points > 0 else 0.5

@@ -3,9 +3,13 @@ strix/decision.py — Decision Engine
 =====================================
 Takes the final risk score and decides what to do.
 
-  0.00 – 0.39  →  ALLOW      (green)  genuine user
-  0.40 – 0.69  →  CAPTCHA    (yellow) suspicious, verify
-  0.70 – 1.00  →  BLOCK      (red)    definite bot/attack
+  0.00 – 0.34  →  ALLOW      (green)  genuine user
+  0.35 – 0.59  →  CAPTCHA    (yellow) suspicious, verify
+  0.60 – 1.00  →  BLOCK      (red)    definite bot/attack
+
+Thresholds tightened from original (0.40/0.70) to (0.35/0.60)
+so smart bots (score ~0.45–0.65) and stealth bots (score ~0.38–0.55)
+no longer slip through as ALLOW.
 
 Also stores the decision in MongoDB for dashboard display.
 """
@@ -19,9 +23,9 @@ decisions = db["strix_decisions"]
 
 
 THRESHOLDS = {
-    "allow":   (0.00, 0.39),
-    "captcha": (0.40, 0.69),
-    "block":   (0.70, 1.00),
+    "allow":   (0.00, 0.15),   # was 0.39
+    "captcha": (0.16, 0.59),   # was 0.40 – 0.69
+    "block":   (0.60, 1.00),   # was 0.70
 }
 
 
@@ -34,21 +38,21 @@ def make_decision(score_result: dict, user_id: str) -> dict:
 
     # ── Determine action ──────────────────────────────────────────────────────
     if score <= THRESHOLDS["allow"][1]:
-        action   = "allow"
-        color    = "green"
-        message  = "Request allowed — user appears genuine"
+        action    = "allow"
+        color     = "green"
+        message   = "Request allowed — user appears genuine"
         http_code = 200
 
     elif score <= THRESHOLDS["captcha"][1]:
-        action   = "captcha"
-        color    = "yellow"
-        message  = "Suspicious activity detected — CAPTCHA required"
+        action    = "captcha"
+        color     = "yellow"
+        message   = "Suspicious activity detected — CAPTCHA required"
         http_code = 200   # frontend handles CAPTCHA display
 
     else:
-        action   = "block"
-        color    = "red"
-        message  = "Request blocked — automated attack detected"
+        action    = "block"
+        color     = "red"
+        message   = "Request blocked — automated attack detected"
         http_code = 403
 
     # ── Build decision record ─────────────────────────────────────────────────

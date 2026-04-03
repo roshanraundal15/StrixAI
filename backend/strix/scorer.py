@@ -67,6 +67,26 @@ def calculate_risk_score(login_data: dict, ip: str) -> dict:
     if honeypot_result["triggered"]:
         raw_score = max(raw_score, 0.85)
 
+    # ── FIX 1: Multi-layer boost ──────────────────────────────────────────────
+    # If 2 or more non-honeypot layers are elevated (score > 0.40), apply a
+    # 35% boost. This catches smart + stealth bots whose individual layer
+    # scores are moderate but multiple layers fire together.
+    elevated_layers = sum([
+        1 for s in [
+            behavioral_result["score"],
+            session_result["score"],
+            network_result["score"],
+        ] if s > 0.40
+    ])
+    if elevated_layers >= 2:
+        raw_score = min(1.0, raw_score * 1.35)
+
+    # ── FIX 2: Password paste floor ───────────────────────────────────────────
+    # Pasting a password is a strong bot indicator. Even if other layers are
+    # low, enforce a minimum of 0.42 so it always triggers at least CAPTCHA.
+    if login_data.get("password_pasted", False):
+        raw_score = max(raw_score, 0.42)
+
     # If known attack fingerprint seen 3+ times, boost score
     if fp["is_known"] and fp["seen_count"] >= 3:
         raw_score = min(raw_score + 0.15, 1.0)
