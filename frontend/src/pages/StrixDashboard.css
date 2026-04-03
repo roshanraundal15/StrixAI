@@ -1,0 +1,172 @@
+.strix-wrap {
+  min-height: 100vh;
+  padding: 32px 40px;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.strix-orb { position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0; }
+.strix-orb1 { width:600px;height:600px;background:radial-gradient(circle,rgba(239,68,68,.12),transparent 70%);top:-200px;right:-100px; }
+.strix-orb2 { width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);bottom:-100px;left:0; }
+
+/* ── Loading ─────────────────────────────── */
+.strix-loading {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 20px; color: var(--muted);
+}
+.strix-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(59,130,246,.2);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+/* ── Header ──────────────────────────────── */
+.strix-header {
+  position: relative; z-index: 5;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.strix-logo-row { display:flex;align-items:center;gap:10px;margin-bottom:4px; }
+.strix-logo-icon {
+  font-size: 1.5rem;
+  background: linear-gradient(135deg,#ef4444,#f59e0b);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.strix-logo-text { font-family:var(--font-head);font-size:1.6rem;font-weight:800;letter-spacing:-0.02em; }
+.strix-live-badge {
+  background: rgba(16,185,129,.15);
+  border: 1px solid rgba(16,185,129,.4);
+  color: #34d399;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+  animation: pulse 2s infinite;
+}
+.strix-sub { color:var(--muted);font-size:0.85rem; }
+.strix-header-right { display:flex;align-items:center;gap:12px; }
+.strix-update { font-size:0.78rem;color:var(--muted); }
+.strix-refresh-btn {
+  background: rgba(59,130,246,.1);
+  border: 1px solid rgba(59,130,246,.3);
+  color: #60a5fa; padding: 8px 16px; border-radius: 8px;
+  font-size: 0.82rem; cursor:pointer; transition: background .2s;
+}
+.strix-refresh-btn:hover { background: rgba(59,130,246,.2); }
+
+/* ── Stat Cards ──────────────────────────── */
+.strix-stats-row {
+  position: relative; z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+.strix-stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.strix-stat-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.strix-stat-val { font-family:var(--font-head);font-size:1.5rem;font-weight:700; }
+.strix-stat-label { font-size:0.72rem;color:var(--muted);margin-top:2px; }
+.strix-stat-sub { font-size:0.68rem;color:#475569;margin-top:1px; }
+
+/* ── Tabs ────────────────────────────────── */
+.strix-tabs { display:flex;gap:8px;position:relative;z-index:5; }
+.strix-tab {
+  padding: 10px 22px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--muted); font-size: 0.88rem; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+}
+.strix-tab.active {
+  background: rgba(59,130,246,.12);
+  border-color: rgba(59,130,246,.4);
+  color: #60a5fa;
+}
+
+/* ── Table ───────────────────────────────── */
+.strix-table-wrap {
+  position: relative; z-index: 5;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: auto;
+  flex: 1;
+}
+.strix-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.strix-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.strix-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  vertical-align: middle;
+}
+.strix-row:last-child td { border-bottom: none; }
+.strix-row:hover td { background: rgba(255,255,255,.02); }
+
+.strix-row-block  td:first-child { border-left: 3px solid #ef4444; }
+.strix-row-captcha td:first-child { border-left: 3px solid #f59e0b; }
+.strix-row-allow  td:first-child { border-left: 3px solid #10b981; }
+
+.td-time  { color: var(--muted); white-space: nowrap; }
+.td-ip    { font-family: monospace; font-size: 0.8rem; color: #93c5fd; }
+.td-user  { color: #cbd5e1; max-width: 160px; overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.td-type  { color: #fbbf24; font-size: 0.78rem; }
+.td-fp    { font-family: monospace; font-size: 0.75rem; color: #a78bfa; }
+
+.action-badge {
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 0.75rem; font-weight: 600;
+  border: 1px solid; white-space: nowrap;
+}
+
+/* score bar */
+.score-bar-wrap { display:flex;align-items:center;gap:8px;min-width:100px; }
+.score-bar-track {
+  flex:1; height:6px; border-radius:3px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+.score-bar-fill { height:100%;border-radius:3px;transition:width .3s; }
+.score-bar-label { font-family:var(--font-head);font-size:0.8rem;font-weight:600;min-width:24px; }
+
+.known-badge {
+  background: rgba(239,68,68,.15);
+  color: #fca5a5; border: 1px solid rgba(239,68,68,.3);
+  padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;
+}
+.new-badge {
+  background: rgba(100,116,139,.1);
+  color: var(--muted); border: 1px solid var(--border);
+  padding: 2px 8px; border-radius: 4px; font-size: 0.72rem;
+}
+.seen-count {
+  font-family: var(--font-head); font-weight: 700; color: #f59e0b;
+}
+.fp-code {
+  background: rgba(167,139,250,.1);
+  color: #a78bfa; padding: 2px 6px; border-radius: 4px;
+  font-size: 0.75rem;
+}
