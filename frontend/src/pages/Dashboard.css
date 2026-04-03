@@ -1,0 +1,146 @@
+.dash-wrap {
+  display: flex; min-height: 100vh;
+  position: relative; overflow-x: hidden;
+}
+.dash-wrap .orb { position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0; }
+.dash-wrap .orb1 { width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);top:-150px;left:180px; }
+.dash-wrap .orb2 { width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);bottom:-100px;right:0; }
+
+/* ── sidebar ────────────────────────────────── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: 240px;
+  display: flex; flex-direction: column;
+  padding: 28px 20px;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  z-index: 20;
+}
+.side-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 40px; padding-left: 8px;
+}
+.side-logo .logo-icon {
+  font-size: 1.3rem;
+  background: linear-gradient(135deg,#3b82f6,#06b6d4);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.side-logo .logo-text { font-family:var(--font-head);font-size:1.2rem;font-weight:800; }
+
+.side-nav { display:flex;flex-direction:column;gap:4px;flex:1; }
+.side-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 12px;
+  font-size: 0.9rem; color: var(--muted);
+  cursor: pointer; transition: all .2s;
+}
+.side-item:hover { background: rgba(255,255,255,.04); color: var(--text); }
+.side-item.active {
+  background: rgba(59,130,246,.12);
+  color: #60a5fa;
+  font-weight: 500;
+}
+.side-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+.side-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer; transition: background .2s;
+  margin-top: 16px;
+}
+.side-user:hover { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.3); }
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg,#3b82f6,#8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9rem;
+}
+.user-name { font-size: 0.85rem; font-weight: 500; }
+.user-role { font-size: 0.72rem; color: var(--muted); }
+.logout-icon { margin-left: auto; color: var(--muted); font-size: 1rem; }
+
+/* ── main ─────────────────────────────────── */
+.dash-main {
+  margin-left: 240px;
+  flex: 1; padding: 32px 40px;
+  position: relative; z-index: 5;
+  display: flex; flex-direction: column; gap: 24px;
+}
+
+/* ── header ───────────────────────────────── */
+.dash-header { display:flex;align-items:center;justify-content:space-between; }
+.dash-greeting { font-family:var(--font-head);font-size:1.6rem;font-weight:700;letter-spacing:-0.01em; }
+.dash-date { color:var(--muted);font-size:0.85rem;margin-top:3px; }
+.notif-btn { padding:10px 14px;cursor:pointer; }
+
+/* ── top row ──────────────────────────────── */
+.top-row { display:grid;grid-template-columns:1fr 1fr;gap:24px; }
+
+/* balance card */
+.balance-card { padding:32px; }
+.bal-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px; }
+.bal-label { font-size:0.8rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase; }
+.eye-btn { background:none;color:var(--muted);font-size:1rem;padding:4px; }
+.bal-amount {
+  font-family:var(--font-head);font-size:2.4rem;font-weight:800;
+  letter-spacing:-0.02em;margin-bottom:8px;
+  background: linear-gradient(135deg,#fff,#93c5fd);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.bal-change { font-size:0.82rem;margin-bottom:28px; }
+.positive { color: var(--success); }
+.bal-actions { display:flex;gap:12px; }
+.bal-btn {
+  flex:1;padding:12px;border-radius:10px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  color:var(--text);font-size:0.85rem;font-weight:500;
+  transition:background .2s;
+}
+.bal-btn:hover { background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4); }
+
+/* card carousel */
+.card-section { display:flex;flex-direction:column; }
+.section-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
+.section-title { font-family:var(--font-head);font-size:1rem;font-weight:600; }
+.section-link { font-size:0.82rem;color:#60a5fa;cursor:pointer; }
+.section-link:hover { color:#93c5fd; }
+
+.card-carousel { display:flex;flex-direction:column;gap:12px; }
+.debit-card {
+  border-radius:16px;padding:22px 24px;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.debit-card:hover { transform:translateY(-2px); }
+.active-card { box-shadow:0 8px 32px rgba(59,130,246,.3); }
+.card-top { display:flex;justify-content:space-between;align-items:center;margin-bottom:18px; }
+.card-bank { font-size:0.8rem;font-weight:600;letter-spacing:0.04em;opacity:.9; }
+.card-chip { font-size:1.1rem;opacity:.8; }
+.card-num { font-family:var(--font-head);font-size:1rem;letter-spacing:0.15em;margin-bottom:14px; }
+.card-bot { display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;opacity:.85; }
+.card-visa { font-family:var(--font-head);font-size:1rem;font-weight:800;font-style:italic; }
+
+/* ── stats grid ───────────────────────────── */
+.stats-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:16px; }
+.stat-card { padding:20px 22px;display:flex;align-items:flex-start;gap:14px; }
+.stat-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px; }
+.stat-card-label { font-size:0.75rem;color:var(--muted);margin-bottom:4px;letter-spacing:0.03em; }
+.stat-card-val { font-family:var(--font-head);font-size:1.2rem;font-weight:700;margin-bottom:2px; }
+.stat-card-change { font-size:0.75rem;font-weight:500; }
+
+/* ── transactions ─────────────────────────── */
+.txn-section { padding:28px; }
+.txn-row {
+  display:flex;align-items:center;gap:16px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.txn-row:last-child { border-bottom:none; }
+.txn-icon { width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0; }
+.txn-info { flex:1; }
+.txn-name { font-size:0.9rem;font-weight:500;margin-bottom:2px; }
+.txn-date { font-size:0.75rem;color:var(--muted); }
+.txn-amt { font-family:var(--font-head);font-size:0.95rem;font-weight:600; }
+.txn-amt.debit  { color:#f87171; }
+.txn-amt.credit { color:#34d399; }
