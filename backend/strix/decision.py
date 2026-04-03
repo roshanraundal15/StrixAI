@@ -23,9 +23,9 @@ decisions = db["strix_decisions"]
 
 
 THRESHOLDS = {
-    "allow":   (0.00, 0.15),   # was 0.39
-    "captcha": (0.16, 0.59),   # was 0.40 – 0.69
-    "block":   (0.60, 1.00),   # was 0.70
+    "allow":   (0.00, 0.20),   # increased from 0.10 (legitimate users can pass up to 20%)
+    "captcha": (0.21, 0.59),   # adjusted to 0.21-0.59
+    "block":   (0.60, 1.00),   # kept at 0.60
 }
 
 

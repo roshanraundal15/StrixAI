@@ -55,28 +55,55 @@ def analyze_behavior(data: dict) -> dict:
     # ── 2. Keystroke uniformity ──────────────────────────────────────────────
     # List of time gaps between keypresses (ms)
     keystroke_intervals = data.get("keystroke_intervals", [])
-    max_points += 3   # increased from 2 → catches smart bot's fake uniform intervals
+    max_points += 4   # increased from 3 → stronger keystroke detection
 
     if len(keystroke_intervals) > 3:
         avg      = sum(keystroke_intervals) / len(keystroke_intervals)
         diffs    = [abs(k - avg) for k in keystroke_intervals]
         variance = sum(diffs) / len(diffs)
+        std_dev  = (sum(d**2 for d in diffs) / len(diffs)) ** 0.5
 
+        # Check for consistent patterns (bots try to look human but are too uniform)
+        # Exclude the large pause(s) to analyze the rapid keystrokes
+        quick_intervals = [k for k in keystroke_intervals if k < 300]
+        if len(quick_intervals) > 2:
+            quick_avg = sum(quick_intervals) / len(quick_intervals)
+            quick_diffs = [abs(k - quick_avg) for k in quick_intervals]
+            quick_variance = sum(quick_diffs) / len(quick_diffs)
+        else:
+            quick_variance = variance
+
+        # Human keystroke variance: typically 40-100ms
+        # Stealth bot: tries for 30-50ms with controlled pauses
         if variance < 10:
             # Perfectly spaced keystrokes — definite bot
-            risk_points += 3
+            risk_points += 4
             signals.append("⚠ Perfectly uniform keystroke timing (bot pattern)")
-        elif variance < 20:
-            # Smart bot tries to add noise but it's still too tight
+        elif variance < 15:
+            # Suspiciously tight distribution — stealth bot signature
+            risk_points += 3
+            signals.append("⚠ Unusually uniform keystroke timing (stealth bot signature)")
+        elif variance < 25:
+            # Still too uniform for realistic human
             risk_points += 2
-            signals.append("⚠ Suspiciously uniform keystroke timing")
-        elif variance < 30:
+            signals.append("⚠ Keystroke variance suspiciously low")
+        elif variance < 35 and std_dev < 25:
+            # Even with pauses, if std_dev is still low = controlled bot
             risk_points += 1
-            signals.append("! Slightly uniform keystroke timing")
+            signals.append("! Keystroke pattern shows artificial regularity")
+        elif quick_variance < 20 and len(quick_intervals) >= 3:
+            # Fast keystrokes are too uniform (even when ignoring pauses)
+            risk_points += 2
+            signals.append("⚠ Rapid keystrokes show unnatural consistency")
+            
     elif len(keystroke_intervals) == 0 and time_to_submit and time_to_submit < 3000:
-        # Fast submit with zero keystrokes = credentials were pasted
+        # Fast submit with ZERO keystrokes = credentials were pasted (bot signature)
         risk_points += 3
         signals.append("⚠ No keystrokes detected — credentials likely pasted")
+    elif len(keystroke_intervals) == 0:
+        # REMOVED: Don't penalize for zero keystroke data if submit time is reasonable
+        # Some apps may not capture keystroke intervals properly
+        signals.append("ℹ Keystroke data unavailable (app limitation)")
 
     # ── 3. Mouse movement ────────────────────────────────────────────────────
     mouse_moves = data.get("mouse_move_count", 0)

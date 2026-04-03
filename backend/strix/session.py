@@ -174,9 +174,19 @@ def analyze_session(ip: str) -> dict:
 
     # ── Low-and-slow detection ────────────────────────────────────────────────
     low_slow_risk = 0
-    if features["day_unique_users"] > 20 and features["attempt_rate"] < 2:
+    # ENHANCED: More aggressive detection with lower thresholds
+    if features["day_unique_users"] > 15 and features["attempt_rate"] < 2:
+        # Original threshold: 20+ accounts
         low_slow_risk = 0.6
         signals.append(f"⚠ LOW-AND-SLOW: {features['day_unique_users']} accounts targeted over 24h at low rate")
+    elif features["day_unique_users"] > 8 and features["attempt_rate"] < 1.5 and features["day_fail_ratio"] > 0.5:
+        # NEW: Trigger at 8+ accounts if failure rate is high (credential stuffing scenario)
+        low_slow_risk = 0.5
+        signals.append(f"⚠ STEALTH ATTACK: {features['day_unique_users']} accounts, {features['day_fail_ratio']*100:.0f}% failures, low rate")
+    elif features["day_unique_users"] > 5 and features["day_fail_ratio"] > 0.7 and features["attempt_rate"] < 1:
+        # NEW: Even fewer accounts (5+) if nearly all fail and rate is very low (typical of stealth)
+        low_slow_risk = 0.45
+        signals.append(f"⚠ DISTRIBUTED ATTACK: {features['day_unique_users']} accounts with {features['day_fail_ratio']*100:.0f}% failure rate")
     elif features["day_unique_users"] > 10 and features["day_fail_ratio"] > 0.7:
         low_slow_risk = 0.4
         signals.append(f"! Slow distributed attack pattern detected over 24h")

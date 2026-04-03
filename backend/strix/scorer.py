@@ -21,10 +21,10 @@ from .fingerprint import generate_fingerprint
 
 
 WEIGHTS = {
-    "honeypot":   0.35,
-    "behavioral": 0.30,
-    "session":    0.25,
-    "network":    0.10,
+    "honeypot":   0.30,    # reduced from 0.35 (honeypot less reliable for stealth)
+    "behavioral": 0.35,   # increased from 0.30 (typing patterns are key)
+    "session":    0.25,   # kept at 0.25
+    "network":    0.10,   # kept at 0.10
 }
 
 
@@ -67,10 +67,10 @@ def calculate_risk_score(login_data: dict, ip: str) -> dict:
     if honeypot_result["triggered"]:
         raw_score = max(raw_score, 0.85)
 
-    # ── FIX 1: Multi-layer boost ──────────────────────────────────────────────
-    # If 2 or more non-honeypot layers are elevated (score > 0.40), apply a
-    # 35% boost. This catches smart + stealth bots whose individual layer
-    # scores are moderate but multiple layers fire together.
+    # ── FIX 1: Multi-layer boost (ENHANCED for stealth) ───────────────────────
+    # If 2 or more non-honeypot layers are elevated (score > 0.40), apply a boost.
+    # This catches smart + stealth bots whose individual layer scores are moderate
+    # but multiple layers fire together.
     elevated_layers = sum([
         1 for s in [
             behavioral_result["score"],
@@ -78,10 +78,19 @@ def calculate_risk_score(login_data: dict, ip: str) -> dict:
             network_result["score"],
         ] if s > 0.40
     ])
-    if elevated_layers >= 2:
-        raw_score = min(1.0, raw_score * 1.35)
+    
+    # Even stronger boost if 3 layers are elevated
+    if elevated_layers >= 3:
+        raw_score = min(1.0, raw_score * 1.50)  # increased from 1.35
+    elif elevated_layers >= 2:
+        raw_score = min(1.0, raw_score * 1.40)  # was just 1.35 for 2+ layers
 
-    # ── FIX 2: Password paste floor ───────────────────────────────────────────
+    # ── FIX 1B: Stealth attack signature boost ──────────────────────────────
+    # Only boost for confirmed low-and-slow stealth patterns, not single requests
+    if fp["attack_type"] in ["low_and_slow", "low_and_slow_stealth"]:
+        raw_score = min(1.0, raw_score + 0.20)
+
+    # ── FIX 2: Password paste floor ────────────────────────────────────────────
     # Pasting a password is a strong bot indicator. Even if other layers are
     # low, enforce a minimum of 0.42 so it always triggers at least CAPTCHA.
     if login_data.get("password_pasted", False):
