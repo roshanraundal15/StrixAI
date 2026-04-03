@@ -159,7 +159,7 @@ def generate_fingerprint(
             "fp_id":       fp_id,
             "signature":   signature,
             "attack_type": attack_type,
-            "last_seen":   datetime.utcnow().isoformat(),
+            "last_seen":   datetime.utcnow().isoformat() + 'Z',
             "last_ip":     ip,
         }, "$inc": {"seen_count": 1}},
         upsert=True

@@ -59,7 +59,7 @@ def make_decision(score_result: dict, user_id: str) -> dict:
     fp = score_result.get("fingerprint", {})
 
     record = {
-        "timestamp":   datetime.utcnow().isoformat(),
+        "timestamp":   datetime.utcnow().isoformat() + 'Z',
         "user_id":     user_id,
         "ip":          score_result.get("ip", "unknown"),
         "final_score": score,

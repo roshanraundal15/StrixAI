@@ -138,7 +138,7 @@ export default function StrixDashboard() {
               )}
               {decisions.map((d, i) => (
                 <tr key={i} className={`strix-row strix-row-${d.action}`}>
-                  <td className="td-time">{new Date(d.timestamp).toLocaleTimeString()}</td>
+                  <td className="td-time">{new Date(d.timestamp).toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata' })}</td>
                   <td className="td-ip">{d.ip}</td>
                   <td className="td-user">{d.user_id?.slice(0, 22)}</td>
                   <td>
@@ -199,7 +199,7 @@ export default function StrixDashboard() {
                   <td>
                     <span className="seen-count">{f.seen_count}×</span>
                   </td>
-                  <td className="td-time">{new Date(f.last_seen).toLocaleTimeString()}</td>
+                  <td className="td-time">{new Date(f.last_seen).toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata' })}</td>
                 </tr>
               ))}
             </tbody>
